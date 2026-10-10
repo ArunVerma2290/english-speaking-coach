@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English Speaking Coach</title>
+<style>
+body{font-family:Arial,sans-serif;background:#eff6ff;margin:0;padding:16px;color:#172554}
+header{background:#1d4ed8;color:white;padding:20px;border-radius:16px;text-align:center}
+.card{background:white;padding:16px;margin-top:14px;border-radius:14px}
+button{background:#2563eb;color:white;border:0;padding:12px;border-radius:8px;margin:5px}
+input{width:95%;padding:12px;border:1px solid #ccc;border-radius:8px}
+</style>
+</head>
+<body>
+<header>
+<h1>English Speaking Coach</h1>
+<p>अंग्रेज़ी बोलना सीखें!</p>
+</header>
+
+<div class="card">
+<h2>📚 Daily English</h2>
+<h3 id="en">How are you?</h3>
+<p id="hi">आप कैसे हैं?</p>
+<button onclick="speak()">🔊 सुनें</button>
+<button onclick="next()">अगला वाक्य</button>
+<p id="num">1 / 10</p>
+</div>
+
+<div class="card">
+<h2>✍️ English Practice</h2>
+<input id="word" placeholder="Type an English sentence">
+<button onclick="check()">Check Sentence</button>
+<p id="result"></p>
+</div>
+
+<div class="card">
+<h2>🎤 Speaking Practice</h2>
+<button onclick="listen()">माइक्रोफोन से बोलें</button>
+<p id="speech">आपका वाक्य यहाँ आएगा।</p>
+</div>
+
+<div class="card">
+<h2>📖 Today's Vocabulary</h2>
+<p>Learn = सीखना</p>
+<p>Improve = सुधारना</p>
+<p>Practice = अभ्यास करना</p>
+<button onclick="sayWord()">शब्द सुनें</button>
+</div>
+
+<script>
+const lessons=[
+["How are you?","आप कैसे हैं?"],
+["My name is Rahul.","मेरा नाम राहुल है।"],
+["I am learning English.","मैं अंग्रेज़ी सीख रहा हूँ।"],
+["Please speak slowly.","कृपया धीरे बोलिए।"],
+["I am fine.","मैं ठीक हूँ।"],
+["Thank you very much.","आपका बहुत धन्यवाद।"],
+["Can you help me?","क्या आप मेरी मदद कर सकते हैं?"],
+["I don't understand.","मुझे समझ नहीं आया।"],
+["What are you doing?","आप क्या कर रहे हैं?"],
+["See you tomorrow.","कल मिलते हैं।"]
+];
+let i=0;
+function show(){
+document.getElementById("en").textContent=lessons[i][0];
+document.getElementById("hi").textContent=lessons[i][1];
+document.getElementById("num").textContent=(i+1)+" / 10";
+}
+function next(){i=(i+1)%lessons.length;show();}
+function speakText(t){
+if(!("speechSynthesis" in window)){
+alert("इस ब्राउज़र में आवाज़ उपलब्ध नहीं है।");return;
+}
+speechSynthesis.cancel();
+let u=new SpeechSynthesisUtterance(t);
+u.lang="en-US";speechSynthesis.speak(u);
+}
+function speak(){speakText(lessons[i][0]);}
+function sayWord(){speakText("Learn. Improve. Practice.");}
+function check(){
+let t=document.getElementById("word").value.trim();
+document.getElementById("result").textContent=
+t ? "आपने लिखा: "+t+". यह शुरुआती संस्करण पूरी Grammar जाँच नहीं करता।"
+: "पहले कोई वाक्य लिखें।";
+}
+function listen(){
+const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!R){alert("Speech recognition उपलब्ध नहीं है। आप वाक्य टाइप कर सकते हैं।");return;}
+let r=new R();r.lang="en-US";
+r.onresult=e=>document.getElementById("speech").textContent=e.results[0][0].transcript;
+r.onerror=()=>document.getElementById("speech").textContent="फिर से प्रयास करें।";
+r.start();
+}
+show();
+</script>
+</body>
+</html>
